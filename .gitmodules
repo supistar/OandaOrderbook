@@ -1,0 +1,3 @@
+[submodule "model/oandapy"]
+	path = model/oandapy
+	url = git@github.com:oanda/oandapy.git
