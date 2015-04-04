@@ -109,7 +109,6 @@
       .data(rangeOrders)
       .enter()
       .append('rect')
-      .attr('class', 'bar')
       .attr({
         x: function(d) {
           return margin.left + xScaleLeft(d.os);
@@ -120,7 +119,14 @@
         y: function(d, i) {
           return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
         },
-        height: yScale.rangeBand()
+        height: yScale.rangeBand(),
+        class: function(d) {
+          if (d.rate >= order.rate) {
+            return 'bar order short high';
+          } else {
+            return 'bar order short low';
+          }
+        }
       })
       .on("mouseover", function() {
         return tooltip.style("visibility", "visible");
@@ -140,7 +146,6 @@
       .data(rangeOrders)
       .enter()
       .append('rect')
-      .attr("class", "bar")
       .attr({
         x: function(d) {
           return margin.left + chartWidth + labelWidth;
@@ -151,7 +156,14 @@
         y: function(d, i) {
           return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
         },
-        height: yScale.rangeBand()
+        height: yScale.rangeBand(),
+        class: function(d) {
+          if (d.rate >= order.rate) {
+            return 'bar order long high';
+          } else {
+            return 'bar order long low';
+          }
+        }
       })
       .on("mouseover", function() {
         return tooltip.style("visibility", "visible");

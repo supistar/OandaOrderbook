@@ -2,7 +2,14 @@ html { height: 100% }
 body { height: 100%; margin: 0; padding: 0 }
 #map_canvas { height: 100% }
 
-.bar { fill: steelblue; }
+.bar {
+    fill: steelblue;
+}
+
+.bar.order.short.high, .bar.order.long.low {
+    fill: orange;
+}
+
 .bar:hover { fill: brown; }
 .axis { font: 10px sans-serif; }
 .axis path,
