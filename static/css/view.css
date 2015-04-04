@@ -30,3 +30,10 @@ div.tooltip th, td {
     margin: 0px;
 }
 
+.grid .tick line {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+.grid path {
+    stroke-width: 0;
+}

@@ -94,6 +94,15 @@
       .attr("class", "y axis")
       .attr("transform", "translate(" + (margin.left + chartWidth + (labelWidth)) + ", " + margin.upper + ")")
       .call(yAxis);
+    // Add x-grid
+    svg.append("g")
+      .attr("class", "x axis left grid")
+      .attr("transform", "translate(" + margin.left + ", " + (chartHeight + margin.upper) + ")")
+      .call(xAxisLeft.tickSize(-chartHeight, 0, 0).tickFormat(''));
+    svg.append("g")
+      .attr("class", "x axis right grid")
+      .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .call(xAxisRight.tickSize(-chartHeight, 0, 0).tickFormat(''));
 
     // Draw left chart
     svg.selectAll('rect.left.bar')
