@@ -6,11 +6,16 @@ body { height: 100%; margin: 0; padding: 0 }
     fill: steelblue;
 }
 
-.bar.order.short.high, .bar.order.long.low {
+.bar.order.short.high,
+.bar.order.long.low,
+.bar.position.short.high,
+.bar.position.long.low {
     fill: orange;
 }
 
-.bar:hover { fill: brown; }
+.bar:hover {
+    fill: brown !important;
+}
 .axis { font: 10px sans-serif; }
 .axis path,
 .axis line {
