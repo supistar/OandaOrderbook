@@ -23,9 +23,11 @@
     // Add drawing area
     var windowWidth = $(window).width();
     var windowHeight = $(window).height();
+    var centerWidth = 40;
     var labelWidth = 40;
-    var chartWidth = ((windowWidth - margin.right - margin.left - labelWidth) / 2);
+    var chartWidth = ((windowWidth - margin.right - margin.left - centerWidth - (labelWidth * 2)) / 4);
     var chartHeight = windowHeight - margin.upper - margin.bottom;
+    var positionChartXPos = (windowWidth + centerWidth) / 2;
     var svg = d3.select("#view")
       .append("svg")
       .attr("width", windowWidth)
@@ -49,72 +51,92 @@
     var rangeMax = d3.max(rangeOrders, function(d) {
       return d.rate;
     });
-    var xScaleLeft = d3.scale.linear()
-      .domain([d3.max(rangeOrders, function(d) {
-        if (d.os > d.ol) {
-          return d.os;
-        } else {
-          return d.ol;
-        }
-      }), 0])
+    var xScaleOrderLeft = d3.scale.linear()
+      .domain([getOrderMaxValue(rangeOrders, "o"), 0])
       .range([0, chartWidth]);
-    var xScaleRight = d3.scale.linear()
-      .domain([0, d3.max(rangeOrders, function(d) {
-        if (d.os > d.ol) {
-          return d.os;
-        } else {
-          return d.ol;
-        }
-      })])
+    var xScaleOrderRight = d3.scale.linear()
+      .domain([0, getOrderMaxValue(rangeOrders, "o")])
+      .range([0, chartWidth]);
+    var xScalePositionLeft = d3.scale.linear()
+      .domain([getOrderMaxValue(rangeOrders, "p"), 0])
+      .range([0, chartWidth]);
+    var xScalePositionRight = d3.scale.linear()
+      .domain([0, getOrderMaxValue(rangeOrders, "p")])
       .range([0, chartWidth]);
     var yScale = d3.scale.ordinal()
       .domain(d3.range(rangeMin, rangeMax, 0.05))
       .rangeBands([chartHeight, 0], 0.1);
 
     // Draw axis
-    var xAxisLeft = d3.svg.axis()
-      .scale(xScaleLeft)
+    var xAxisOrderLeft = d3.svg.axis()
+      .scale(xScaleOrderLeft)
       .orient("bottom");
-    var xAxisRight = d3.svg.axis()
-      .scale(xScaleRight)
+    var xAxisOrderRight = d3.svg.axis()
+      .scale(xScaleOrderRight)
+      .orient("bottom");
+    var xAxisPositionLeft = d3.svg.axis()
+      .scale(xScalePositionLeft)
+      .orient("bottom");
+    var xAxisPositionRight = d3.svg.axis()
+      .scale(xScalePositionRight)
       .orient("bottom");
     var yAxis = d3.svg.axis()
       .scale(yScale)
       .tickValues(d3.range(d3.round(rangeMin, 0), d3.round(rangeMax, 0), 0.2))
       .orient("left");
     svg.append("g")
-      .attr("class", "x axis left")
+      .attr("class", "x axis order left")
       .attr("transform", "translate(" + margin.left + ", " + (chartHeight + margin.upper) + ")")
-      .call(xAxisLeft);
+      .call(xAxisOrderLeft);
     svg.append("g")
-      .attr("class", "x axis right")
+      .attr("class", "x axis order right")
       .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
-      .call(xAxisRight);
+      .call(xAxisOrderRight);
     svg.append("g")
-      .attr("class", "y axis")
+      .attr("class", "y axis order")
       .attr("transform", "translate(" + (margin.left + chartWidth + (labelWidth)) + ", " + margin.upper + ")")
+      .call(yAxis);
+    svg.append("g")
+      .attr("class", "x axis position left")
+      .attr("transform", "translate(" + positionChartXPos + ", " + (chartHeight + margin.upper) + ")")
+      .call(xAxisPositionLeft);
+    svg.append("g")
+      .attr("class", "x axis position right")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .call(xAxisPositionRight);
+    svg.append("g")
+      .attr("class", "y axis position")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + (labelWidth)) + ", " + margin.upper + ")")
       .call(yAxis);
     // Add x-grid
     svg.append("g")
-      .attr("class", "x axis left grid")
+      .attr("class", "x axis order left grid")
       .attr("transform", "translate(" + margin.left + ", " + (chartHeight + margin.upper) + ")")
-      .call(xAxisLeft.tickSize(-chartHeight, 0, 0).tickFormat(''));
+      .call(xAxisOrderLeft.tickSize(-chartHeight, 0, 0).tickFormat(''));
     svg.append("g")
-      .attr("class", "x axis right grid")
+      .attr("class", "x axis order right grid")
       .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
-      .call(xAxisRight.tickSize(-chartHeight, 0, 0).tickFormat(''));
+      .call(xAxisOrderRight.tickSize(-chartHeight, 0, 0).tickFormat(''));
+    svg.append("g")
+      .attr("class", "x axis position left grid")
+      .attr("transform", "translate(" + positionChartXPos + ", " + (chartHeight + margin.upper) + ")")
+      .call(xAxisPositionLeft.tickSize(-chartHeight, 0, 0).tickFormat(''));
+    svg.append("g")
+      .attr("class", "x axis position right grid")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .call(xAxisPositionRight.tickSize(-chartHeight, 0, 0).tickFormat(''));
 
     // Draw left chart
-    svg.selectAll('rect.left.bar')
+    svg.selectAll('rect.order.left.bar')
       .data(rangeOrders)
       .enter()
       .append('rect')
       .attr({
         x: function(d) {
-          return margin.left + xScaleLeft(d.os);
+          return margin.left + xScaleOrderLeft(d.os);
         },
         width: function(d) {
-          return chartWidth - xScaleLeft(d.os);
+          return chartWidth - xScaleOrderLeft(d.os);
         },
         y: function(d, i) {
           return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
@@ -142,7 +164,7 @@
       });
 
     // Draw right chart
-    svg.selectAll('rect.right.bar')
+    svg.selectAll('rect.order.right.bar')
       .data(rangeOrders)
       .enter()
       .append('rect')
@@ -151,7 +173,7 @@
           return margin.left + chartWidth + labelWidth;
         },
         width: function(d) {
-          return xScaleRight(d.ol);
+          return xScaleOrderRight(d.ol);
         },
         y: function(d, i) {
           return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
@@ -177,6 +199,80 @@
       .on("mouseout", function() {
         return tooltip.style("visibility", "hidden");
       });
+
+    // Draw left chart
+    svg.selectAll('rect.position.left.bar')
+      .data(rangeOrders)
+      .enter()
+      .append('rect')
+      .attr({
+        x: function(d) {
+          return positionChartXPos + xScalePositionLeft(d.ps);
+        },
+        width: function(d) {
+          return chartWidth - xScalePositionLeft(d.ps);
+        },
+        y: function(d, i) {
+          return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
+        },
+        height: yScale.rangeBand(),
+        class: function(d) {
+          if (d.rate >= order.rate) {
+            return 'bar position short high';
+          } else {
+            return 'bar position short low';
+          }
+        }
+      })
+      .on("mouseover", function() {
+        return tooltip.style("visibility", "visible");
+      })
+      .on("mousemove", function(d) {
+        return tooltip
+          .style("top", (d3.event.pageY - 10) + "px")
+          .style("left", (d3.event.pageX + 10) + "px")
+          .html("<table><tbody><tr><td>* Rate:</td><td>" + d.rate + "</td></tr><tr><td>* Amount:</td><td>" + d.ps + "</td></tr></tbody></table>");
+      })
+      .on("mouseout", function() {
+        return tooltip.style("visibility", "hidden");
+      });
+
+    // Draw right chart
+    svg.selectAll('rect.position.right.bar')
+      .data(rangeOrders)
+      .enter()
+      .append('rect')
+      .attr({
+        x: function(d) {
+          return positionChartXPos + chartWidth + labelWidth;
+        },
+        width: function(d) {
+          return xScalePositionRight(d.pl);
+        },
+        y: function(d, i) {
+          return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
+        },
+        height: yScale.rangeBand(),
+        class: function(d) {
+          if (d.rate >= order.rate) {
+            return 'bar position long high';
+          } else {
+            return 'bar position long low';
+          }
+        }
+      })
+      .on("mouseover", function() {
+        return tooltip.style("visibility", "visible");
+      })
+      .on("mousemove", function(d) {
+        return tooltip
+          .style("top", (d3.event.pageY - 10) + "px")
+          .style("left", (d3.event.pageX + 10) + "px")
+          .html("<table><tbody><tr><td>* Rate:</td><td>" + d.rate + "</td></tr><tr><td>* Amount:</td><td>" + d.pl + "</td></tr></tbody></table>");
+      })
+      .on("mouseout", function() {
+        return tooltip.style("visibility", "hidden");
+      });
   }
 
   function getOrdersByRange(orders, rateMin, rateMax) {
@@ -188,6 +284,18 @@
       result.push(value);
     })
     return result;
+  }
+
+  function getOrderMaxValue(orders, element) {
+    var long = element + "l";
+    var short = element + "s";
+    return d3.max(orders, function(d) {
+      if (d[short] > d[long]) {
+        return d[short];
+      } else {
+        return d[long];
+      }
+    });
   }
 
   // Exports
