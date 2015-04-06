@@ -73,7 +73,7 @@
 
     var padding = new BigNumber(tick).times(4).round(6).toPrecision();
     var paddingMin = new BigNumber(rangeMin).dividedBy(padding).ceil().times(padding).round(6).toPrecision();
-    var paddingMax = new BigNumber(rangeMax).dividedBy(padding).ceil().times(padding).round(6).toPrecision();
+    var paddingMax = new BigNumber(rangeMax).dividedBy(padding).floor().times(padding).round(6).toPrecision();
     console.log("Padding : " + paddingMin + " / " + paddingMax + " / " + padding);
 
     // Draw axis
