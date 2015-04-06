@@ -68,7 +68,7 @@
       .domain([0, getOrderMaxValue(rangeOrders, "p")])
       .range([0, chartWidth]);
     var yScale = d3.scale.ordinal()
-      .domain(d3.range(rangeMin, rangeMax, tick))
+      .domain(getPreciseValueRange(rangeMin, rangeMax, tick))
       .rangeBands([chartHeight, 0], 0.1);
 
     var padding = new BigNumber(tick).times(4).round(6).toPrecision();
@@ -91,7 +91,7 @@
       .orient("bottom");
     var yAxis = d3.svg.axis()
       .scale(yScale)
-      .tickValues(d3.range(paddingMin, paddingMax, padding))
+      .tickValues(getPreciseValueRange(paddingMin, paddingMax, padding))
       .orient("left");
     svg.append("g")
       .attr("class", "x axis order left")
@@ -317,6 +317,26 @@
         return d[long];
       }
     });
+  }
+
+  function getPreciseValueRange(start, end, diff) {
+    var range = [];
+    if (diff == 0) {
+      return range;
+    }
+    if (diff > 0 && start > end) {
+      return range;
+    }
+    if (diff < 0 && start < end) {
+      return range;
+    }
+    var current = new BigNumber(start);
+    var digits = Math.max(new BigNumber(start).precision(), new BigNumber(end).precision(), new BigNumber(diff).precision());
+    while (current.lessThanOrEqualTo(end)) {
+      range.push(current.toPrecision());
+      current = new BigNumber(current).plus(diff);
+    }
+    return range;
   }
 
   // Exports
