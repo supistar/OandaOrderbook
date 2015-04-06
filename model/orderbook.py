@@ -6,11 +6,16 @@ from model.oandapy import oandapy
 
 class OrderBook(object):
 
-    def get_latest_orderbook(self, instrument, period):
+    def get_latest_orderbook(self, instrument, period, history):
         oanda_token = os.environ.get('OANDA_TOKEN')
         oanda = oandapy.API(environment="practice", access_token=oanda_token)
         orders = oanda.get_orderbook(instrument=instrument)
-        latest_time = max(x for x in orders.keys())
-        order = orders[latest_time]
-        order['time'] = latest_time
+        try:
+            timeset = orders.keys()
+            timeset.reverse()
+            target_time = timeset[history]
+        except:
+            return None
+        order = orders[target_time]
+        order['time'] = target_time
         return order
