@@ -5,13 +5,13 @@
     var order = $.parseJSON(orders);
 
     // Calculate max/min values
-    var rateMax = order.rate + 2;
-    var rateMin = order.rate - 2;
+    var upperBarCount = 40;
+    var lowerBarCount = 40;
 
-    drawGraph(order, rateMin, rateMax);
+    drawGraph(order, lowerBarCount, upperBarCount);
   }
 
-  function drawGraph(order, rateMin, rateMax) {
+  function drawGraph(order, lowerBarCount, upperBarCount) {
     // Margins
     var margin = {
       upper: 20,
@@ -42,8 +42,9 @@
       .style("visibility", "hidden")
       .text("");
 
-    // Set x and y axis
-    var rangeOrders = getOrdersByRange(order.orders, rateMin, rateMax);
+    // Get target order/position range
+    var tick = getRateBaseTick(order.orders);
+    var rangeOrders = getOrdersByRange(order.orders, order.rate, tick, lowerBarCount, upperBarCount);
     console.log("length : " + rangeOrders.length);
     var rangeMin = d3.min(rangeOrders, function(d) {
       return d.rate;
@@ -51,6 +52,9 @@
     var rangeMax = d3.max(rangeOrders, function(d) {
       return d.rate;
     });
+
+    console.log("Range : " + rangeMin + " / " + rangeMax + " / " + tick);
+    // Set x and y axis
     var xScaleOrderLeft = d3.scale.linear()
       .domain([getOrderMaxValue(rangeOrders, "o"), 0])
       .range([0, chartWidth]);
@@ -64,8 +68,13 @@
       .domain([0, getOrderMaxValue(rangeOrders, "p")])
       .range([0, chartWidth]);
     var yScale = d3.scale.ordinal()
-      .domain(d3.range(rangeMin, rangeMax, 0.05))
+      .domain(d3.range(rangeMin, rangeMax, tick))
       .rangeBands([chartHeight, 0], 0.1);
+
+    var padding = new BigNumber(tick).times(4).round(6).toPrecision();
+    var paddingMin = new BigNumber(rangeMin).dividedBy(padding).ceil().times(padding).round(6).toPrecision();
+    var paddingMax = new BigNumber(rangeMax).dividedBy(padding).ceil().times(padding).round(6).toPrecision();
+    console.log("Padding : " + paddingMin + " / " + paddingMax + " / " + padding);
 
     // Draw axis
     var xAxisOrderLeft = d3.svg.axis()
@@ -82,7 +91,7 @@
       .orient("bottom");
     var yAxis = d3.svg.axis()
       .scale(yScale)
-      .tickValues(d3.range(d3.round(rangeMin, 0), d3.round(rangeMax, 0), 0.2))
+      .tickValues(d3.range(paddingMin, paddingMax, padding))
       .orient("left");
     svg.append("g")
       .attr("class", "x axis order left")
@@ -94,7 +103,7 @@
       .call(xAxisOrderRight);
     svg.append("g")
       .attr("class", "y axis order")
-      .attr("transform", "translate(" + (margin.left + chartWidth + (labelWidth)) + ", " + margin.upper + ")")
+      .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + margin.upper + ")")
       .call(yAxis);
     svg.append("g")
       .attr("class", "x axis position left")
@@ -106,7 +115,7 @@
       .call(xAxisPositionRight);
     svg.append("g")
       .attr("class", "y axis position")
-      .attr("transform", "translate(" + (positionChartXPos + chartWidth + (labelWidth)) + ", " + margin.upper + ")")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + labelWidth) + ", " + margin.upper + ")")
       .call(yAxis);
     // Add x-grid
     svg.append("g")
@@ -275,10 +284,22 @@
       });
   }
 
-  function getOrdersByRange(orders, rateMin, rateMax) {
+  function getRateBaseTick(orders) {
+    var tick = 5;
+    var orderTick = orders[Math.floor(orders.length / 2) + 1].rate - orders[Math.floor(orders.length / 2)].rate;
+    console.log("Tick : " + orderTick);
+
+    var product = Math.round(5 / orderTick);
+    console.log("Product : " + product)
+    var baseTick = Math.round(orderTick * product) / product;
+    console.log("BaseTick : " + baseTick);
+    return baseTick;
+  }
+
+  function getOrdersByRange(orders, rate, baseTick, lowerBarCount, upperBarCount) {
     result = [];
     $.each(orders, function(index, value) {
-      if (value.rate < rateMin || value.rate > rateMax) {
+      if (value.rate < -lowerBarCount * baseTick + rate || value.rate > upperBarCount * baseTick + rate) {
         return;
       }
       result.push(value);
