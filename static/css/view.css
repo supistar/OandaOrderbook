@@ -13,6 +13,10 @@ body { height: 100%; margin: 0; padding: 0 }
     fill: orange;
 }
 
+.bar.rate {
+    fill: green;
+}
+
 .bar:hover {
     fill: brown !important;
 }
@@ -40,6 +44,18 @@ div.tooltip {
 div.tooltip th, td {
     font: 12px sans-serif;
     margin: 0px;
+}
+
+.current-rate.tooltip.rect {
+    fill: green;
+    stroke: green;
+    stroke-width: 0;
+}
+
+.current-rate.tooltip.text {
+    font-size: 10px;
+    font-family: sans-serif;
+    fill: #FFF;
 }
 
 .grid .tick line {

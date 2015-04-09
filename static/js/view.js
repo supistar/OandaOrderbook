@@ -172,6 +172,27 @@
         return tooltip.style("visibility", "hidden");
       });
 
+    // Draw current rate on left chart
+    svg.selectAll('rect.order.left.rate.line')
+      .data([order.rate])
+      .enter()
+      .append('rect')
+      .attr({
+        x: function(d) {
+          return margin.left;
+        },
+        width: function(d) {
+          return chartWidth;
+        },
+        y: function(d, i) {
+          return (chartHeight / 2) + margin.upper;
+        },
+        height: 1,
+        class: function(d) {
+          return 'bar rate';
+        }
+      });
+
     // Draw right chart
     svg.selectAll('rect.order.right.bar')
       .data(rangeOrders)
@@ -208,6 +229,52 @@
       .on("mouseout", function() {
         return tooltip.style("visibility", "hidden");
       });
+
+    // Draw current rate on right chart
+    svg.selectAll('rect.order.right.rate.line')
+      .data([order.rate])
+      .enter()
+      .append('rect')
+      .attr({
+        x: function(d) {
+          return margin.left + chartWidth + labelWidth;
+        },
+        width: function(d) {
+          return chartWidth;
+        },
+        y: function(d, i) {
+          return (chartHeight / 2) + margin.upper;
+        },
+        height: 1,
+        class: function(d) {
+          return 'bar rate';
+        }
+      });
+
+    var orderRateSvg = svg.selectAll('rect.order.right.rate.line')
+      .data([order.rate])
+      .enter();
+    orderRateSvg.append("rect")
+      .attr("class", "current-rate tooltip rect")
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - 40)
+      .attr('y', (chartHeight / 2) + margin.upper - 20)
+      .attr("rx", 3)
+      .attr("ry", 3)
+      .attr("width", 40)
+      .attr("height", 15);
+    orderRateSvg.append("text")
+      .attr("class", "current-rate tooltip rect arrows")
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - 40)
+      .attr('y', (chartHeight / 2) + margin.upper)
+      .text("▼");
+    orderRateSvg.append('text')
+      .attr('class', 'current-rate tooltip text')
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - 20)
+      .attr('y', (chartHeight / 2) + margin.upper - 10)
+      .text(function(d, i) {
+        return d;
+      })
+      .attr("text-anchor", "middle");
 
     // Draw left chart
     svg.selectAll('rect.position.left.bar')
@@ -246,6 +313,27 @@
         return tooltip.style("visibility", "hidden");
       });
 
+    // Draw current rate on left chart
+    svg.selectAll('rect.position.left.rate.line')
+      .data([order.rate])
+      .enter()
+      .append('rect')
+      .attr({
+        x: function(d) {
+          return positionChartXPos;
+        },
+        width: function(d) {
+          return chartWidth;
+        },
+        y: function(d, i) {
+          return (chartHeight / 2) + margin.upper;
+        },
+        height: 1,
+        class: function(d) {
+          return 'bar rate';
+        }
+      });
+
     // Draw right chart
     svg.selectAll('rect.position.right.bar')
       .data(rangeOrders)
@@ -281,6 +369,27 @@
       })
       .on("mouseout", function() {
         return tooltip.style("visibility", "hidden");
+      });
+
+    // Draw current rate on right chart
+    svg.selectAll('rect.position.right.rate.line')
+      .data([order.rate])
+      .enter()
+      .append('rect')
+      .attr({
+        x: function(d) {
+          return positionChartXPos + chartWidth + labelWidth;
+        },
+        width: function(d) {
+          return chartWidth;
+        },
+        y: function(d, i) {
+          return (chartHeight / 2) + margin.upper;
+        },
+        height: 1,
+        class: function(d) {
+          return 'bar rate';
+        }
       });
   }
 
@@ -331,7 +440,6 @@
       return range;
     }
     var current = new BigNumber(start);
-    var digits = Math.max(new BigNumber(start).precision(), new BigNumber(end).precision(), new BigNumber(diff).precision());
     while (current.lessThanOrEqualTo(end)) {
       range.push(current.toPrecision());
       current = new BigNumber(current).plus(diff);
