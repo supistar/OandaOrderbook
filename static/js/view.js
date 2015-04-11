@@ -251,28 +251,46 @@
         }
       });
 
+    var rateWidth = 120;
+    var rateHeight = 40;
+    var options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    };
     var orderRateSvg = svg.selectAll('rect.order.right.rate.line')
-      .data([order.rate])
+      .data([order])
       .enter();
     orderRateSvg.append("rect")
       .attr("class", "current-rate tooltip rect")
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - 40)
-      .attr('y', (chartHeight / 2) + margin.upper - 20)
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - rateWidth)
+      .attr('y', (chartHeight / 2) + margin.upper - rateHeight)
       .attr("rx", 3)
       .attr("ry", 3)
-      .attr("width", 40)
-      .attr("height", 15);
+      .attr("width", rateWidth)
+      .attr("height", (rateHeight * 4 / 5));
     orderRateSvg.append("text")
       .attr("class", "current-rate tooltip rect arrows")
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - 40)
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - rateWidth)
       .attr('y', (chartHeight / 2) + margin.upper)
       .text("▼");
     orderRateSvg.append('text')
-      .attr('class', 'current-rate tooltip text')
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - 20)
-      .attr('y', (chartHeight / 2) + margin.upper - 10)
+      .attr('class', 'current-rate tooltip text upper')
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - (rateWidth / 2))
+      .attr('y', (chartHeight / 2) + margin.upper - (rateHeight * 2 / 3))
       .text(function(d, i) {
-        return d;
+        return new Date(Number(d.time) * 1000).toLocaleDateString("ja-JP", options);
+      })
+      .attr("text-anchor", "middle");
+    orderRateSvg.append('text')
+      .attr('class', 'current-rate tooltip text lower')
+      .attr('x', margin.left + chartWidth * 2 + labelWidth - (rateWidth / 2))
+      .attr('y', (chartHeight / 2) + margin.upper - (rateHeight / 3))
+      .text(function(d, i) {
+        return d.rate;
       })
       .attr("text-anchor", "middle");
 
