@@ -12,6 +12,7 @@ class OrderBook(object):
         orders = oanda.get_orderbook(instrument=instrument)
         try:
             timeset = orders.keys()
+            timeset.sort()
             timeset.reverse()
             target_time = timeset[history]
         except:
