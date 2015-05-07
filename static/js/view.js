@@ -152,11 +152,16 @@
         },
         height: yScale.rangeBand(),
         class: function(d) {
+          var base = 'bar order short'
           if (d.rate >= order.rate) {
-            return 'bar order short high';
+            base += ' high';
           } else {
-            return 'bar order short low';
+            base += ' low';
           }
+          if (d.os >= 1) {
+            base += ' notice';
+          }
+          return base;
         }
       })
       .on("mouseover", function() {
@@ -210,11 +215,16 @@
         },
         height: yScale.rangeBand(),
         class: function(d) {
+          var base = 'bar order long'
           if (d.rate >= order.rate) {
-            return 'bar order long high';
+            base += ' high';
           } else {
-            return 'bar order long low';
+            base += ' low';
           }
+          if (d.ol >= 1) {
+            base += ' notice';
+          }
+          return base;
         }
       })
       .on("mouseover", function() {
