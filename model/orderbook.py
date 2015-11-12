@@ -8,7 +8,8 @@ class OrderBook(object):
 
     def get_latest_orderbook(self, instrument, period, history):
         oanda_token = os.environ.get('OANDA_TOKEN')
-        oanda = oandapy.API(environment="practice", access_token=oanda_token)
+        oanda_environment = os.environ.get('OANDA_ENVIRONMENT', 'practice')
+        oanda = oandapy.API(environment=oanda_environment, access_token=oanda_token)
         orders = oanda.get_orderbook(instrument=instrument)
         try:
             timeset = orders.keys()
