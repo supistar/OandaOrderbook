@@ -3,19 +3,43 @@
 <head>
   <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/bignumber.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/view.js') }}"></script>
   <script type="text/javascript">
     $(function() {
+      window.addInstrumentListHandler();
       window.initialize()
     });
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="//storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css" />
 </head>
 
 <body>
   <div id="view"></div>
+
+  <button id="demo-menu-lower-left" class="mdl-button mdl-js-button mdl-button--raised mdl-button--icon mdl-button--colored">
+    <i class="material-icons">more_vert</i>
+  </button>
+  <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-left">
+    <li class="mdl-menu__item instrument_list">AUD_JPY</li>
+    <li class="mdl-menu__item instrument_list">AUD_USD</li>
+    <li class="mdl-menu__item instrument_list">EUR_AUD</li>
+    <li class="mdl-menu__item instrument_list">EUR_CHF</li>
+    <li class="mdl-menu__item instrument_list">EUR_GBP</li>
+    <li class="mdl-menu__item instrument_list">EUR_JPY</li>
+    <li class="mdl-menu__item instrument_list">EUR_USD</li>
+    <li class="mdl-menu__item instrument_list">GBP_CHF</li>
+    <li class="mdl-menu__item instrument_list">GBP_JPY</li>
+    <li class="mdl-menu__item instrument_list">GBP_USD</li>
+    <li class="mdl-menu__item instrument_list">NZD_USD</li>
+    <li class="mdl-menu__item instrument_list">USD_CAD</li>
+    <li class="mdl-menu__item instrument_list">USD_CHF</li>
+    <li class="mdl-menu__item instrument_list">USD_JPY</li>
+  </ul>
 </body>
 
 </html>

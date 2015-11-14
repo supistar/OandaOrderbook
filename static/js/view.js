@@ -473,6 +473,14 @@
     return range;
   }
 
+  function addInstrumentListHandler() {
+    $('li.mdl-menu__item.instrument_list').on('click', function() {
+      var idx = $('li.mdl-menu__item.instrument_list').index(this);
+      var title = $('li.mdl-menu__item.instrument_list:nth-child(' + (idx + 1) + ')').text();
+      retrieveOrders(title);
+    });
+  }
+
   function retrieveOrders(instrument) {
     if (!instrument) {
       instrument = "USD_JPY";
@@ -498,7 +506,9 @@
   // Exports
   if ("process" in global) {
     module["exports"] = initialize;
+    module["addInstrumentListHandler"] = addInstrumentListHandler;
   }
   global["initialize"] = initialize;
+  global["addInstrumentListHandler"] = addInstrumentListHandler;
 
 })((this || 0).self || global);
