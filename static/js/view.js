@@ -2,16 +2,14 @@
   "use strict;"
 
   function initialize(orders, staticPath) {
-    var order = $.parseJSON(orders);
-
-    // Calculate max/min values
-    var upperBarCount = 40;
-    var lowerBarCount = 40;
-
-    drawGraph(order, lowerBarCount, upperBarCount);
+    // Retrieve orders
+    retrieveOrders();
   }
 
   function drawGraph(order, lowerBarCount, upperBarCount) {
+    // Clear existing graphs
+    $("div#view").empty();
+
     // Margins
     var margin = {
       upper: 20,
@@ -473,6 +471,28 @@
       current = new BigNumber(current).plus(diff);
     }
     return range;
+  }
+
+  function retrieveOrders(instrument) {
+    if (!instrument) {
+      instrument = "USD_JPY";
+    }
+    $.ajax({
+      type: "POST",
+      url: "apis/orders",
+      contentType: "application/json",
+      data: JSON.stringify({
+        "instrument": instrument
+      }),
+      success: function(orders) {
+        var order = $.parseJSON(orders);
+
+        // Calculate max/min values
+        var upperBarCount = 40;
+        var lowerBarCount = 40;
+        drawGraph(order, lowerBarCount, upperBarCount);
+      }
+    });
   }
 
   // Exports
