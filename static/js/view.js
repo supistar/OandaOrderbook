@@ -6,6 +6,14 @@
     retrieveOrders();
   }
 
+  function setOrders(orders) {
+    this.orders = orders;
+  }
+
+  function getCachedOrders() {
+    return this.orders;
+  }
+
   function drawGraph(order, lowerBarCount, upperBarCount) {
     // Clear existing graphs
     $("div#view").empty();
@@ -486,12 +494,26 @@
     return range;
   }
 
+  function addHandlers() {
+    addInstrumentListHandler();
+    addWindowResizeHandler();
+  }
+
   function addInstrumentListHandler() {
     $('li.mdl-menu__item.instrument_list').on('click', function() {
       var idx = $('li.mdl-menu__item.instrument_list').index(this);
       var title = $('li.mdl-menu__item.instrument_list:nth-child(' + (idx + 1) + ')').text();
       retrieveOrders(title);
     });
+  }
+
+  function addWindowResizeHandler() {
+    $(window).resize(function() {
+      // TODO: Fix this bar count definition logic
+      var upperBarCount = 40;
+      var lowerBarCount = 40;
+      drawGraph(getCachedOrders(), lowerBarCount, upperBarCount);
+    })
   }
 
   function retrieveOrders(instrument) {
@@ -508,6 +530,7 @@
       }),
       success: function(orders) {
         var order = $.parseJSON(orders);
+        setOrders(order);
 
         // Calculate max/min values
         var upperBarCount = 40;
@@ -525,9 +548,9 @@
   // Exports
   if ("process" in global) {
     module["exports"] = initialize;
-    module["addInstrumentListHandler"] = addInstrumentListHandler;
+    module["addHandlers"] = addHandlers;
   }
   global["initialize"] = initialize;
-  global["addInstrumentListHandler"] = addInstrumentListHandler;
+  global["addHandlers"] = addHandlers;
 
 })((this || 0).self || global);
