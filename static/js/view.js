@@ -15,17 +15,30 @@
       upper: 20,
       right: 40,
       bottom: 50,
-      left: 40
+      left: 40,
+      center: 40,
+      label: 40
     };
 
     // Add drawing area
     var windowWidth = $(window).width();
     var windowHeight = $(window).height();
-    var centerWidth = 40;
-    var labelWidth = 40;
-    var chartWidth = ((windowWidth - margin.right - margin.left - centerWidth - (labelWidth * 2)) / 4);
-    var chartHeight = windowHeight - margin.upper - margin.bottom;
-    var positionChartXPos = (windowWidth + centerWidth) / 2;
+
+    var chartWidth = 0;
+    var chartHeight = 0;
+    var positionChartXPos = 0;
+    var positionChartYPos = 0;
+    if (windowWidth > windowHeight) {
+      chartWidth = ((windowWidth - margin.right - margin.left - margin.center - (margin.label * 2)) / 4);
+      chartHeight = windowHeight - margin.upper - margin.bottom;
+      positionChartXPos = margin.left + (chartWidth * 2) + margin.label + margin.center;
+      positionChartYPos = margin.upper;
+    } else {
+      chartWidth = ((windowWidth - margin.right - margin.left - margin.label) / 2);
+      chartHeight = ((windowHeight - margin.upper - margin.bottom - margin.center) / 2);
+      positionChartXPos = margin.left;
+      positionChartYPos = margin.upper + chartHeight + margin.center;
+    }
     var svg = d3.select("#view")
       .append("svg")
       .attr("width", windowWidth)
@@ -97,23 +110,23 @@
       .call(xAxisOrderLeft);
     svg.append("g")
       .attr("class", "x axis order right")
-      .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .attr("transform", "translate(" + (margin.left + chartWidth + margin.label) + ", " + (chartHeight + margin.upper) + ")")
       .call(xAxisOrderRight);
     svg.append("g")
       .attr("class", "y axis order")
-      .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + margin.upper + ")")
+      .attr("transform", "translate(" + (margin.left + chartWidth + margin.label) + ", " + margin.upper + ")")
       .call(yAxis);
     svg.append("g")
       .attr("class", "x axis position left")
-      .attr("transform", "translate(" + positionChartXPos + ", " + (chartHeight + margin.upper) + ")")
+      .attr("transform", "translate(" + positionChartXPos + ", " + (positionChartYPos + chartHeight) + ")")
       .call(xAxisPositionLeft);
     svg.append("g")
       .attr("class", "x axis position right")
-      .attr("transform", "translate(" + (positionChartXPos + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + margin.label) + ", " + (positionChartYPos + chartHeight) + ")")
       .call(xAxisPositionRight);
     svg.append("g")
       .attr("class", "y axis position")
-      .attr("transform", "translate(" + (positionChartXPos + chartWidth + labelWidth) + ", " + margin.upper + ")")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + margin.label) + ", " + (positionChartYPos) + ")")
       .call(yAxis);
     // Add x-grid
     svg.append("g")
@@ -122,15 +135,15 @@
       .call(xAxisOrderLeft.tickSize(-chartHeight, 0, 0).tickFormat(''));
     svg.append("g")
       .attr("class", "x axis order right grid")
-      .attr("transform", "translate(" + (margin.left + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .attr("transform", "translate(" + (margin.left + chartWidth + margin.label) + ", " + (chartHeight + margin.upper) + ")")
       .call(xAxisOrderRight.tickSize(-chartHeight, 0, 0).tickFormat(''));
     svg.append("g")
       .attr("class", "x axis position left grid")
-      .attr("transform", "translate(" + positionChartXPos + ", " + (chartHeight + margin.upper) + ")")
+      .attr("transform", "translate(" + positionChartXPos + ", " + (positionChartYPos + chartHeight) + ")")
       .call(xAxisPositionLeft.tickSize(-chartHeight, 0, 0).tickFormat(''));
     svg.append("g")
       .attr("class", "x axis position right grid")
-      .attr("transform", "translate(" + (positionChartXPos + chartWidth + labelWidth) + ", " + (chartHeight + margin.upper) + ")")
+      .attr("transform", "translate(" + (positionChartXPos + chartWidth + margin.label) + ", " + (positionChartYPos + chartHeight) + ")")
       .call(xAxisPositionRight.tickSize(-chartHeight, 0, 0).tickFormat(''));
 
     // Draw left chart
@@ -203,7 +216,7 @@
       .append('rect')
       .attr({
         x: function(d) {
-          return margin.left + chartWidth + labelWidth;
+          return margin.left + chartWidth + margin.label;
         },
         width: function(d) {
           return xScaleOrderRight(d.ol);
@@ -245,7 +258,7 @@
       .append('rect')
       .attr({
         x: function(d) {
-          return margin.left + chartWidth + labelWidth;
+          return margin.left + chartWidth + margin.label;
         },
         width: function(d) {
           return chartWidth;
@@ -274,7 +287,7 @@
       .enter();
     orderRateSvg.append("rect")
       .attr("class", "current-rate tooltip rect")
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - rateWidth)
+      .attr('x', margin.left + chartWidth * 2 + margin.label - rateWidth)
       .attr('y', (chartHeight / 2) + margin.upper - rateHeight)
       .attr("rx", 3)
       .attr("ry", 3)
@@ -282,12 +295,12 @@
       .attr("height", (rateHeight * 4 / 5));
     orderRateSvg.append("text")
       .attr("class", "current-rate tooltip rect arrows")
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - rateWidth)
+      .attr('x', margin.left + chartWidth * 2 + margin.label - rateWidth)
       .attr('y', (chartHeight / 2) + margin.upper)
       .text("▼");
     orderRateSvg.append('text')
       .attr('class', 'current-rate tooltip text upper')
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - (rateWidth / 2))
+      .attr('x', margin.left + chartWidth * 2 + margin.label - (rateWidth / 2))
       .attr('y', (chartHeight / 2) + margin.upper - (rateHeight * 2 / 3))
       .text(function(d, i) {
         return new Date(Number(d.time) * 1000).toLocaleDateString("ja-JP", options);
@@ -295,7 +308,7 @@
       .attr("text-anchor", "middle");
     orderRateSvg.append('text')
       .attr('class', 'current-rate tooltip text lower')
-      .attr('x', margin.left + chartWidth * 2 + labelWidth - (rateWidth / 2))
+      .attr('x', margin.left + chartWidth * 2 + margin.label - (rateWidth / 2))
       .attr('y', (chartHeight / 2) + margin.upper - (rateHeight / 3))
       .text(function(d, i) {
         return d.rate;
@@ -315,7 +328,7 @@
           return chartWidth - xScalePositionLeft(d.ps);
         },
         y: function(d, i) {
-          return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
+          return positionChartYPos + (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) - yScale.rangeBand();
         },
         height: yScale.rangeBand(),
         class: function(d) {
@@ -352,7 +365,7 @@
           return chartWidth;
         },
         y: function(d, i) {
-          return (chartHeight / 2) + margin.upper;
+          return positionChartYPos + (chartHeight / 2);
         },
         height: 1,
         class: function(d) {
@@ -367,13 +380,13 @@
       .append('rect')
       .attr({
         x: function(d) {
-          return positionChartXPos + chartWidth + labelWidth;
+          return positionChartXPos + chartWidth + margin.label;
         },
         width: function(d) {
           return xScalePositionRight(d.pl);
         },
         y: function(d, i) {
-          return (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) + margin.upper - yScale.rangeBand();
+          return positionChartYPos + (chartHeight - ((chartHeight / (rangeOrders.length - 1)) * i)) - yScale.rangeBand();
         },
         height: yScale.rangeBand(),
         class: function(d) {
@@ -404,13 +417,13 @@
       .append('rect')
       .attr({
         x: function(d) {
-          return positionChartXPos + chartWidth + labelWidth;
+          return positionChartXPos + chartWidth + margin.label;
         },
         width: function(d) {
           return chartWidth;
         },
         y: function(d, i) {
-          return (chartHeight / 2) + margin.upper;
+          return positionChartYPos + (chartHeight / 2);
         },
         height: 1,
         class: function(d) {
